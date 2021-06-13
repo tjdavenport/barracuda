@@ -4,8 +4,9 @@ import Row from 'react-bootstrap/Row';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
-import {Trash, Pencil} from 'react-bootstrap-icons';
+import {Calendar, momentLocalizer} from 'react-big-calendar';
 import {Fragment, useEffect, useRef, useCallback, useState} from 'react';
+import {Trash, Pencil, Calendar as CalendarIcon, CardList} from 'react-bootstrap-icons';
 
 import './App.css';
 
@@ -83,17 +84,48 @@ function TodoListGroupItem({id, notes, due, done, onRemoved = id => {}, onUpdate
   );
 }
 
+const localizer = momentLocalizer(moment);
 
 function App({onAdded = todo => {}, onUpdated = todo => {}, onRemoved = id => {}, todos = [], loading = false}) {
-  return (
-    <ListGroup style={{width: '100%'}}>
-      <ListGroup.Item>
-        <TodoForm onSubmit={onAdded}/>
-      </ListGroup.Item>
-      {Object.entries(todos).map(([id, todo]) => (
-        <TodoListGroupItem key={id} onRemoved={onRemoved} onUpdated={onUpdated} {...{id, ...todo}}/>
-      ))}
-    </ListGroup>
+  const [calendared, setCalendared] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('');
+
+  const filter = <Form.Control 
+    size="sm"
+    type="text"
+    value={activeFilter}
+    onChange={e => setActiveFilter(e.currentTarget.value)}
+    placeholder="filter todos"
+    className="ms-2"
+    name="filter" />;
+
+  return calendared ? (
+    <Fragment>
+      <div className="d-flex">
+        <Button onClick={e => setCalendared(false)} size="sm" variant="primary"><CardList/></Button>
+        {filter}
+      </div>
+      <Calendar
+        style={{height: 500}}
+        events={Object.values(todos).map(({due, notes: title}) => ({title, start: moment.unix(due).toDate(), allDay: true}))}
+        localizer={localizer}
+      />
+    </Fragment>
+  ) : (
+    <Fragment>
+      <div className="d-flex pb-2">
+        <Button onClick={e => setCalendared(true)} size="sm" variant="primary"><CalendarIcon/></Button>
+        {filter}
+      </div>
+      <ListGroup style={{width: '100%'}}>
+        <ListGroup.Item>
+          <TodoForm onSubmit={onAdded}/>
+        </ListGroup.Item>
+        {Object.entries(todos).filter(([id, {notes}]) => notes.includes(activeFilter)).map(([id, todo]) => (
+          <TodoListGroupItem key={id} onRemoved={onRemoved} onUpdated={onUpdated} {...{id, ...todo}}/>
+        ))}
+      </ListGroup>
+    </Fragment>
   );
 }
 

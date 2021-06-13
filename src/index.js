@@ -8,7 +8,7 @@ import {makeUseAxios} from 'axios-hooks';
 import reportWebVitals from './reportWebVitals';
 
 import 'bootstrap/scss/bootstrap.scss';
-import './index.css';
+import './index.scss';
 
 const useAxios = makeUseAxios({
   axios: axios.create({baseURL: 'http://localhost:1337'})
