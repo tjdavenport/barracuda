@@ -15,18 +15,25 @@ const useAxios = makeUseAxios({
 });
 
 function ApiWrapper() {
-  const [{data: todos, loading, errorLoading}, loadTodos] = useAxios('/todos');
-  const [{data, saving, errorSaving}, saveTodo] = useAxios({url: '/todos', method: 'post'}, {manual: true});
+  const [{data: todos, loading, error: errorLoading}, loadTodos] = useAxios('/todos');
+  const [{loading: saving, error: errorSaving}, saveTodo] = useAxios({url: '/todos', method: 'post'}, {manual: true});
+  const [{loading: deleting, error: errorDeleting}, deleteTodo] = useAxios({method: 'delete'}, {manual: true});
+  const [{loading: updating, error: errorUpdating}, updateTodo] = useAxios({method: 'patch'}, {manual: true});
 
-  const handleTodoAdded = useCallback(todo => {
-    saveTodo({data: todo}).then(() => loadTodos());
-  });
+  const handleTodoAdded = useCallback(todo => saveTodo({data: todo}).then(() => loadTodos()));
+  const handleTodoRemoved = useCallback(id => deleteTodo({url: `/todos/${id}`}).then(() => loadTodos()));
+  const handleTodoUpdated = useCallback(({id, notes, due, done}) => updateTodo({
+    url: `/todos/${id}`,
+    data: {notes, due, done}
+  }).then(() => loadTodos()));
 
   return <App 
     todos={todos}
-    spinner={loading || saving}
-    error={errorLoading || errorSaving}
-    onTodoAdded={handleTodoAdded} />;
+    spinner={loading || saving || deleting}
+    error={errorLoading || errorSaving || errorDeleting}
+    onTodoAdded={handleTodoAdded}
+    onTodoRemoved={handleTodoRemoved}
+    onTodoUpdated={handleTodoUpdated}/>;
 }
 
 ReactDOM.render(
