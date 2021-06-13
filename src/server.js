@@ -13,6 +13,7 @@ const todos = {
 
 // @TODO - add authentication and sessions
 // @TODO - use postgres to store todos
+// @TODO - add 404 handling
 
 app.use(bodyParser.json());
 app.use(cors());
