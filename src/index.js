@@ -20,6 +20,8 @@ function ApiWrapper() {
   const [{loading: deleting, error: errorDeleting}, deleteTodo] = useAxios({method: 'delete'}, {manual: true});
   const [{loading: updating, error: errorUpdating}, updateTodo] = useAxios({method: 'patch'}, {manual: true});
 
+  // @TODO - use errors and add decent error handling
+
   const handleAdded = useCallback(todo => saveTodo({data: todo}).then(() => loadTodos()));
   const handleRemoved = useCallback(id => deleteTodo({url: `/todos/${id}`}).then(() => loadTodos()));
   const handleUpdated = useCallback(({id, notes, due, done}) => updateTodo({
