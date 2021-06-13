@@ -17,7 +17,7 @@ function TodoForm({onSubmit = todo => {}, submitText = 'Do it', todo = {}}) {
     onSubmit({
       id: todo.id,
       notes: e.currentTarget.elements.notes.value,
-      due: new Date(e.currentTarget.elements.due.value).getTime()
+      due: moment(e.currentTarget.elements.due.value).unix()
     }).then(() => {
       notesRef.current?.focus();
       notesRef.current && (notesRef.current.value = '');
@@ -39,7 +39,7 @@ function TodoForm({onSubmit = todo => {}, submitText = 'Do it', todo = {}}) {
             required 
             type="date"
             ref={dueRef}
-            defaultValue={todo.due && new Date(todo.due).toISOString().substr(0, 10)}
+            defaultValue={todo.due && moment(todo.due).format('YYYY-MM-DD')}
             placeholder="get something done" name="due" />
         </Col>
         <Col md={2}>
@@ -74,7 +74,7 @@ function TodoListGroupItem({id, notes, due, done, onRemoved = id => {}, onUpdate
             <div style={{flexGrow: 1}}>
               <Button  variant="link" onClick={e => setUpdating(true)}><Pencil/></Button>
             </div>
-            <small className="">{new Date(due).toLocaleDateString()}</small>
+            <small className="">{moment.unix(due).format('ll')}</small>
             <Button variant="link" onClick={() => onRemoved(id)}><Trash/></Button>
           </Fragment>
         )}

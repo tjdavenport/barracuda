@@ -1,4 +1,5 @@
 const cors = require('cors');
+const moment = require('moment');
 const {v4: uuid} = require('uuid');
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,8 +7,8 @@ const bodyParser = require('body-parser');
 const app = express();
 
 const todos = {
-  [uuid()]: {done: true, notes: 'complete barracuda take-home assignment', due: new Date().getTime()},
-  [uuid()]: {done: false, notes: 'clean room', due: new Date('9999-01-02').getTime()},
+  [uuid()]: {done: true, notes: 'complete barracuda take-home assignment', due: moment().unix()},
+  [uuid()]: {done: false, notes: 'clean room', due: moment('9999-01-01').unix()},
 };
 
 // @TODO - add authentication and sessions
