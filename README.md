@@ -1,3 +1,12 @@
+# Cool ToDO List!
+
+### Quickstart
+1. `npm i`
+2. `node src/server.js`
+3. `npm start`
+
+also see default CRA readme below...
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
