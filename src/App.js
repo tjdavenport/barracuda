@@ -101,13 +101,18 @@ function App({onAdded = todo => {}, onUpdated = todo => {}, onRemoved = id => {}
 
   return calendared ? (
     <Fragment>
-      <div className="d-flex">
+      <div className="d-flex pb-2">
         <Button onClick={e => setCalendared(false)} size="sm" variant="primary"><CardList/></Button>
         {filter}
       </div>
       <Calendar
         style={{height: 500}}
-        events={Object.values(todos).map(({due, notes: title}) => ({title, start: moment.unix(due).toDate(), allDay: true}))}
+        events={Object.values(todos).filter(({notes}) => notes.includes(activeFilter)).map(({due, notes: title}) => ({
+          title, 
+          start: moment.unix(due).toDate(), 
+          end: moment.unix(due).toDate(),
+          allDay: true
+        }))}
         localizer={localizer}
       />
     </Fragment>
