@@ -20,9 +20,9 @@ function ApiWrapper() {
   const [{loading: deleting, error: errorDeleting}, deleteTodo] = useAxios({method: 'delete'}, {manual: true});
   const [{loading: updating, error: errorUpdating}, updateTodo] = useAxios({method: 'patch'}, {manual: true});
 
-  const handleTodoAdded = useCallback(todo => saveTodo({data: todo}).then(() => loadTodos()));
-  const handleTodoRemoved = useCallback(id => deleteTodo({url: `/todos/${id}`}).then(() => loadTodos()));
-  const handleTodoUpdated = useCallback(({id, notes, due, done}) => updateTodo({
+  const handleAdded = useCallback(todo => saveTodo({data: todo}).then(() => loadTodos()));
+  const handleRemoved = useCallback(id => deleteTodo({url: `/todos/${id}`}).then(() => loadTodos()));
+  const handleUpdated = useCallback(({id, notes, due, done}) => updateTodo({
     url: `/todos/${id}`,
     data: {notes, due, done}
   }).then(() => loadTodos()));
@@ -31,9 +31,9 @@ function ApiWrapper() {
     todos={todos}
     spinner={loading || saving || deleting}
     error={errorLoading || errorSaving || errorDeleting}
-    onTodoAdded={handleTodoAdded}
-    onTodoRemoved={handleTodoRemoved}
-    onTodoUpdated={handleTodoUpdated}/>;
+    onAdded={handleAdded}
+    onRemoved={handleRemoved}
+    onUpdated={handleUpdated}/>;
 }
 
 ReactDOM.render(

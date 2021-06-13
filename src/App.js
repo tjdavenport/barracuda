@@ -11,11 +11,19 @@ import './App.css';
 
 function TodoForm({onSubmit = todo => {}, submitText = 'Do it', todo = {}}) {
   const notesRef = useRef();
-  const handleSubmit = useCallback(e => e.preventDefault() + onSubmit({
-    id: todo.id,
-    notes: e.currentTarget.elements.notes.value,
-    due: new Date(e.currentTarget.elements.due.value).getTime()
-  }), [onSubmit]);
+  const dueRef = useRef();
+  const handleSubmit = useCallback(e => {
+    e.preventDefault();
+    onSubmit({
+      id: todo.id,
+      notes: e.currentTarget.elements.notes.value,
+      due: new Date(e.currentTarget.elements.due.value).getTime()
+    }).then(() => {
+      notesRef.current?.focus();
+      notesRef.current && (notesRef.current.value = '');
+      dueRef.current && (dueRef.current.value = '');
+    });
+  }, [onSubmit]);
 
   useEffect(() => notesRef.current?.focus(), []);
 
@@ -30,7 +38,7 @@ function TodoForm({onSubmit = todo => {}, submitText = 'Do it', todo = {}}) {
           <Form.Control 
             required 
             type="date"
-            ref={notesRef}
+            ref={dueRef}
             defaultValue={todo.due && new Date(todo.due).toISOString().substr(0, 10)}
             placeholder="get something done" name="due" />
         </Col>
@@ -49,7 +57,10 @@ function TodoListGroupItem({id, notes, due, done, onRemoved = id => {}, onUpdate
     <ListGroup.Item key={id}>
       <div className="d-flex align-items-center">
         {updating ? (
-          <TodoForm todo={{id, notes, due}} onSubmit={todo => onUpdated(todo) + setUpdating(false)} submitText={'Save'}/>
+          <TodoForm todo={{id, notes, due}} onSubmit={todo => {
+            setUpdating(false)
+            return onUpdated(todo);
+          }} submitText={'Save'}/>
         ) : (
           <Fragment>
             <Form.Check
@@ -73,14 +84,14 @@ function TodoListGroupItem({id, notes, due, done, onRemoved = id => {}, onUpdate
 }
 
 
-function App({onTodoAdded = todo => {}, onTodoUpdated = todo => {}, onTodoRemoved = id => {}, todos = [], loading = false}) {
+function App({onAdded = todo => {}, onUpdated = todo => {}, onRemoved = id => {}, todos = [], loading = false}) {
   return (
     <ListGroup style={{width: '100%'}}>
       <ListGroup.Item>
-        <TodoForm onSubmit={onTodoAdded}/>
+        <TodoForm onSubmit={onAdded}/>
       </ListGroup.Item>
       {Object.entries(todos).map(([id, todo]) => (
-        <TodoListGroupItem key={id} onRemoved={onTodoRemoved} onUpdated={onTodoUpdated} {...{id, ...todo}}/>
+        <TodoListGroupItem key={id} onRemoved={onRemoved} onUpdated={onUpdated} {...{id, ...todo}}/>
       ))}
     </ListGroup>
   );
