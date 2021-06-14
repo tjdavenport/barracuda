@@ -22,12 +22,12 @@ function ApiWrapper() {
 
   // @TODO - use errors and add decent error handling
 
-  const handleAdded = useCallback(todo => saveTodo({data: todo}).then(() => loadTodos()));
-  const handleRemoved = useCallback(id => deleteTodo({url: `/todos/${id}`}).then(() => loadTodos()));
+  const handleAdded = useCallback(todo => saveTodo({data: todo}).then(() => loadTodos()), []);
+  const handleRemoved = useCallback(id => deleteTodo({url: `/todos/${id}`}).then(() => loadTodos()), []);
   const handleUpdated = useCallback(({id, notes, due, done}) => updateTodo({
     url: `/todos/${id}`,
     data: {notes, due, done}
-  }).then(() => loadTodos()));
+  }).then(() => loadTodos()), []);
 
   return <App 
     todos={todos}
