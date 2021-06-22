@@ -8,8 +8,16 @@ const app = express();
 
 const todos = {
   [uuid()]: {done: true, notes: 'complete barracuda take-home assignment', due: moment().unix()},
-  [uuid()]: {done: false, notes: 'clean room', due: moment('9999-01-01').unix()},
+  [uuid()]: {done: false, notes: 'clean room', due: moment('2015-01-01').unix()},
 };
+
+setInterval(() => {
+  for (const [id, todo] of Object.entries(todos)) {
+    if (moment.unix(todo.due).isBefore(moment().subtract(1, 'years'))) {
+      delete todos[id];
+    }
+  }
+}, 1000);
 
 // @TODO - add authentication and sessions
 // @TODO - use postgres to store todos

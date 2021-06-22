@@ -13,17 +13,23 @@ import './App.css';
 function TodoForm({onSubmit = todo => {}, submitText = 'Do it', todo = {}}) {
   const notesRef = useRef();
   const dueRef = useRef();
+
   const handleSubmit = useCallback(e => {
     e.preventDefault();
-    onSubmit({
-      id: todo.id,
-      notes: e.currentTarget.elements.notes.value,
-      due: moment(e.currentTarget.elements.due.value).unix()
-    }).then(() => {
-      notesRef.current?.focus();
-      notesRef.current && (notesRef.current.value = '');
-      dueRef.current && (dueRef.current.value = '');
-    });
+
+    if (moment(e.currentTarget.elements.due.value).isBefore()) {
+      e.currentTarget.elements.due.setCustomValidity('date must be in the future, dumby');
+    } else {
+      onSubmit({
+        id: todo.id,
+        notes: e.currentTarget.elements.notes.value,
+        due: moment(e.currentTarget.elements.due.value).unix()
+      }).then(() => {
+        notesRef.current?.focus();
+        notesRef.current && (notesRef.current.value = '');
+        dueRef.current && (dueRef.current.value = '');
+      });
+    }
   }, [onSubmit]);
 
   useEffect(() => notesRef.current?.focus(), []);
@@ -40,7 +46,8 @@ function TodoForm({onSubmit = todo => {}, submitText = 'Do it', todo = {}}) {
             required 
             type="date"
             ref={dueRef}
-            defaultValue={todo.due && moment(todo.due).format('YYYY-MM-DD')}
+            onKeyDown={e => e.currentTarget.setCustomValidity('')}
+            defaultValue={todo.due && moment.unix(todo.due).format('YYYY-MM-DD')}
             placeholder="get something done" name="due" />
         </Col>
         <Col md={2}>
